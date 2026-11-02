@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Artikel — Artikel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #EEF2EC;
+    --surface: #FBFCF9;
+    --surface-hover: #F3F6EF;
+    --border: #DCE4D7;
+    --ink: #1F2B25;
+    --ink-muted: #5C6B61;
+    --ink-faint: #8A998F;
+    --accent: #3E6E59;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(31, 43, 37, 0.07);
+    --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.25rem 1.5rem 1.75rem;
+  }
+
+  .header-inner { max-width: 1040px; margin: 0 auto; }
+
+  .brand {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tagline {
+    margin: 0.4rem 0 0;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    max-width: 46ch;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .state {
+    padding: 4rem 1rem;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+
+  .state p { margin: 0 0 1rem; }
+
+  .state button, .state .btn {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 1.2rem;
+    cursor: pointer;
+  }
+
+  .state button:hover, .state .btn:hover { background: var(--surface-hover); }
+
+  .state[hidden], article[hidden] { display: none; }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.9rem;
+  }
+
+  .art-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(1.7rem, 1.2rem + 2vw, 2.4rem);
+    line-height: 1.25;
+    margin: 0 0 0.9rem;
+  }
+
+  .art-meta {
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-bottom: 1.75rem;
+  }
+
+  .art-meta .meta-author { color: var(--ink-muted); font-weight: 500; }
+
+  .art-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+  }
+
+  .art-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .art-media .media-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 3.5rem;
+    font-weight: 600;
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+    margin: 0 0 2.25rem;
+    max-width: 64ch;
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .step {
+    display: flex;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem 1.4rem;
+  }
+
+  .step-number {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--surface);
+    font-family: var(--font-serif);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+
+  .step-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0 0 0.35rem;
+  }
+
+  .step-desc {
+    margin: 0;
+    font-size: 0.93rem;
+    color: var(--ink-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/">Artikel</a>
+    <p class="tagline">Ringkasan singkat dari tiap tulisan, pilih yang menarik untuk dibaca selengkapnya.</p>
+  </div>
+</header>
+
+<main>
+  <section id="state-loading" class="state">
+    <p>Memuat artikel…</p>
+  </section>
+
+  <section id="state-error" class="state" hidden>
+    <p>Artikel belum bisa dimuat. Periksa koneksi lalu coba lagi.</p>
+    <button id="retry-btn" type="button">Coba lagi</button>
+  </section>
+
+  <section id="state-notfound" class="state" hidden>
+    <p>Artikel tidak ditemukan. Mungkin sudah dihapus atau tautannya salah.</p>
+    <a class="btn" href="/">Kembali ke beranda</a>
+  </section>
+
+  <article id="article" hidden>
+    <a class="back-link" href="/">← Semua artikel</a>
+    <span class="tag" id="art-tag"></span>
+    <h1 class="art-title" id="art-title"></h1>
+    <div class="art-meta">
+      <span class="meta-author" id="art-author"></span>
+      <time id="art-date"></time>
+    </div>
+    <div class="art-media" id="art-media"></div>
+    <p class="lead" id="art-summary"></p>
+    <ol class="steps" id="art-steps"></ol>
+  </article>
+</main>
+
+<script>
+  // Same muted category palette used on the homepage, for visual consistency.
+  const CATEGORY_PALETTE = [
+    { bg: "#E8F0E6", text: "#3E6E59" },
+    { bg: "#F3EADB", text: "#8C5B22" },
+    { bg: "#F2E2DF", text: "#A2493F" },
+    { bg: "#E2E8F1", text: "#3A5A82" },
+    { bg: "#ECE1EF", text: "#6B4A82" },
+  ];
+
+  function categoryColor(category) {
+    let hash = 0;
+    for (let i = 0; i < category.length; i++) {
+      hash = (hash * 31 + category.charCodeAt(i)) >>> 0;
+    }
+    return CATEGORY_PALETTE[hash % CATEGORY_PALETTE.length];
+  }
+
+  function formatDate(isoDate) {
+    try {
+      return new Date(isoDate).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return isoDate;
+    }
+  }
+
+  function getArticleId() {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const last = parts[parts.length - 1];
+    return /^\d+$/.test(last) ? last : null;
+  }
+
+  function showState(id) {
+    ["state-loading", "state-error", "state-notfound"].forEach((s) => {
+      document.getElementById(s).hidden = s !== id;
+    });
+    document.getElementById("article").hidden = true;
+  }
+
+  function renderMedia(article, colors) {
+    const media = document.getElementById("art-media");
+    media.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = article.featured_image;
+    img.alt = article.title;
+    img.onerror = () => {
+      media.innerHTML = "";
+      const fallback = document.createElement("div");
+      fallback.className = "media-fallback";
+      fallback.style.background = colors.bg;
+      fallback.style.color = colors.text;
+      fallback.textContent = article.title.charAt(0).toUpperCase();
+      media.appendChild(fallback);
+    };
+    media.appendChild(img);
+  }
+
+  function renderSteps(contentList) {
+    const list = document.getElementById("art-steps");
+    list.innerHTML = "";
+    (contentList || []).forEach((item, index) => {
+      const li = document.createElement("li");
+      li.className = "step";
+
+      const number = document.createElement("span");
+      number.className = "step-number";
+      number.textContent = index + 1;
+
+      const body = document.createElement("div");
+      const title = document.createElement("h2");
+      title.className = "step-title";
+      title.textContent = item.title;
+      const desc = document.createElement("p");
+      desc.className = "step-desc";
+      desc.textContent = item.description;
+      body.append(title, desc);
+
+      li.append(number, body);
+      list.appendChild(li);
+    });
+  }
+
+  function renderArticle(article) {
+    const colors = categoryColor(article.category);
+
+    document.title = `${article.title} — Artikel`;
+
+    const tag = document.getElementById("art-tag");
+    tag.textContent = article.category;
+    tag.style.background = colors.bg;
+    tag.style.color = colors.text;
+
+    document.getElementById("art-title").textContent = article.title;
+    document.getElementById("art-author").textContent = article.author;
+
+    const date = document.getElementById("art-date");
+    date.dateTime = article.published_at;
+    date.textContent = formatDate(article.published_at);
+
+    renderMedia(article, colors);
+    document.getElementById("art-summary").textContent = article.summary;
+    renderSteps(article.content_list);
+
+    document.querySelectorAll(".state").forEach((s) => (s.hidden = true));
+    document.getElementById("article").hidden = false;
+  }
+
+  async function loadArticle() {
+    const articleId = getArticleId();
+    if (!articleId) {
+      showState("state-notfound");
+      return;
+    }
+
+    showState("state-loading");
+
+    try {
+      const res = await fetch(`/api/detail/article/${articleId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const article = await res.json();
+
+      if (!article) {
+        showState("state-notfound");
+        return;
+      }
+
+      renderArticle(article);
+    } catch (err) {
+      console.error("Gagal memuat artikel:", err);
+      showState("state-error");
+    }
+  }
+
+  document.getElementById("retry-btn").addEventListener("click", loadArticle);
+  loadArticle();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beranda — Artikel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #EEF2EC;
+    --surface: #FBFCF9;
+    --surface-hover: #F3F6EF;
+    --border: #DCE4D7;
+    --ink: #1F2B25;
+    --ink-muted: #5C6B61;
+    --ink-faint: #8A998F;
+    --accent: #3E6E59;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(31, 43, 37, 0.07);
+    --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.25rem 1.5rem 1.75rem;
+  }
+
+  .header-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+
+  .brand {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tagline {
+    margin: 0.4rem 0 0;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    max-width: 46ch;
+  }
+
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* loading / error / empty states */
+  .state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+
+  .state p { margin: 0 0 1rem; }
+
+  .state button {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+  }
+
+  .state button:hover { background: var(--surface-hover); }
+
+  .feed[hidden], .state[hidden] { display: none; }
+
+  /* hero card */
+  .hero-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+
+  @media (min-width: 720px) {
+    .hero-card { flex-direction: row; }
+    .hero-card .card-media { width: 46%; }
+  }
+
+  .hero-card .card-media { aspect-ratio: 16 / 10; }
+  .hero-card .card-body { padding: 1.75rem 2rem; }
+  .hero-card .card-title {
+    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+    -webkit-line-clamp: 3;
+  }
+  .hero-card .card-summary { -webkit-line-clamp: 4; }
+
+  /* shared card bits */
+  .card-media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-media .media-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+
+  .card-body { padding: 1.25rem 1.3rem 1.4rem; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.7rem;
+  }
+
+  .card-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-summary {
+    margin: 0 0 0.9rem;
+    font-size: 0.92rem;
+    color: var(--ink-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+  }
+
+  .card-meta .meta-author { color: var(--ink-muted); font-weight: 500; }
+
+  /* grid of remaining cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .grid .card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .grid .card:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+  }
+
+  .grid .card:hover .card-title { text-decoration: underline; text-underline-offset: 3px; }
+
+  footer {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <span class="brand">Artikel</span>
+    <p class="tagline">Ringkasan singkat dari tiap tulisan, pilih yang menarik untuk dibaca selengkapnya.</p>
+  </div>
+</header>
+
+<main>
+  <noscript>
+    <p class="state">Aktifkan JavaScript di browser Anda untuk melihat daftar artikel.</p>
+  </noscript>
+
+  <section id="state-loading" class="state">
+    <p>Memuat artikel…</p>
+  </section>
+
+  <section id="state-error" class="state" hidden>
+    <p>Artikel belum bisa dimuat. Periksa koneksi lalu coba lagi.</p>
+    <button id="retry-btn" type="button">Coba lagi</button>
+  </section>
+
+  <section id="state-empty" class="state" hidden>
+    <p>Belum ada artikel yang dipublikasikan di sini.</p>
+  </section>
+
+  <div id="feed" class="feed" hidden></div>
+</main>
+
+<footer>
+  <p>Daftar artikel diambil langsung dari server saat halaman dibuka.</p>
+</footer>
+
+<script>
+  const API_URL = "/api/data/articles";
+
+  // Muted, low-saturation palette so each category gets a subtle color
+  // identity without the page turning loud.
+  const CATEGORY_PALETTE = [
+    { bg: "#E8F0E6", text: "#3E6E59" },
+    { bg: "#F3EADB", text: "#8C5B22" },
+    { bg: "#F2E2DF", text: "#A2493F" },
+    { bg: "#E2E8F1", text: "#3A5A82" },
+    { bg: "#ECE1EF", text: "#6B4A82" },
+  ];
+
+  function categoryColor(category) {
+    let hash = 0;
+    for (let i = 0; i < category.length; i++) {
+      hash = (hash * 31 + category.charCodeAt(i)) >>> 0;
+    }
+    return CATEGORY_PALETTE[hash % CATEGORY_PALETTE.length];
+  }
+
+  function formatDate(isoDate) {
+    try {
+      return new Date(isoDate).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return isoDate;
+    }
+  }
+
+  function buildMedia(article, colors) {
+    const media = document.createElement("div");
+    media.className = "card-media";
+
+    const img = document.createElement("img");
+    img.src = article.featured_image;
+    img.alt = article.title;
+    img.loading = "lazy";
+    img.onerror = () => {
+      media.innerHTML = "";
+      const fallback = document.createElement("div");
+      fallback.className = "media-fallback";
+      fallback.style.background = colors.bg;
+      fallback.style.color = colors.text;
+      fallback.textContent = article.title.charAt(0).toUpperCase();
+      media.appendChild(fallback);
+    };
+    media.appendChild(img);
+    return media;
+  }
+
+  function buildBody(article, colors) {
+    const body = document.createElement("div");
+    body.className = "card-body";
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.style.background = colors.bg;
+    tag.style.color = colors.text;
+    tag.textContent = article.category;
+
+    const title = document.createElement("h3");
+    title.className = "card-title";
+    title.textContent = article.title;
+
+    const summary = document.createElement("p");
+    summary.className = "card-summary";
+    summary.textContent = article.summary;
+
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+    const author = document.createElement("span");
+    author.className = "meta-author";
+    author.textContent = article.author;
+    const date = document.createElement("time");
+    date.className = "meta-date";
+    date.dateTime = article.published_at;
+    date.textContent = formatDate(article.published_at);
+    meta.append(author, date);
+
+    body.append(tag, title, summary, meta);
+    return body;
+  }
+
+  function buildCard(article, { hero = false } = {}) {
+    const colors = categoryColor(article.category);
+
+    const card = document.createElement("a");
+    card.className = hero ? "hero-card" : "card";
+    card.href = `/detail/article/${article.id}`;
+
+    card.appendChild(buildMedia(article, colors));
+    card.appendChild(buildBody(article, colors));
+    return card;
+  }
+
+  function showState(id) {
+    ["state-loading", "state-error", "state-empty"].forEach((s) => {
+      document.getElementById(s).hidden = s !== id;
+    });
+  }
+
+  async function loadArticles() {
+    showState("state-loading");
+    document.getElementById("feed").hidden = true;
+
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const articles = await res.json();
+
+      if (!Array.isArray(articles) || articles.length === 0) {
+        showState("state-empty");
+        return;
+      }
+
+      const feed = document.getElementById("feed");
+      feed.innerHTML = "";
+
+      const [first, ...rest] = articles;
+      feed.appendChild(buildCard(first, { hero: true }));
+
+      if (rest.length) {
+        const grid = document.createElement("div");
+        grid.className = "grid";
+        rest.forEach((a) => grid.appendChild(buildCard(a)));
+        feed.appendChild(grid);
+      }
+
+      document.querySelectorAll(".state").forEach((s) => (s.hidden = true));
+      feed.hidden = false;
+    } catch (err) {
+      console.error("Gagal memuat artikel:", err);
+      showState("state-error");
+    }
+  }
+
+  document.getElementById("retry-btn").addEventListener("click", loadArticles);
+  loadArticles();
+</script>
+
+</body>
+</html>
